@@ -1,50 +1,70 @@
-# Environment variables
-.env
-
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# C extensions
+*.pyd
+
+# Distribution / packaging
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
+.eggs/
 *.egg
 MANIFEST
 
+# Installer logs
+downloads/
+*.log
+
 # Virtual environments
-.venv
-env/
+.venv/
 venv/
+env/
 ENV/
 env.bak/
 venv.bak/
 
-# IDE
+# PyInstaller
+main
+main.spec
+
+# Output directories
+raw_reports/
+reports/
+
+# macOS
+.DS_Store
+
+# IDEs and editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# macOS
-.DS_Store
+# PyInstaller build artifacts
+build/*
+build/**
 
-# Output directories
-raw_reports/
-reports/
+dist/*
+dist/**
 
-# Logs
-*.log
+# Ignore all files in build/ and dist/ recursively
+build/
+dist/
+
+# Environment variables
+.env
+config/.env
+
+# Project directories
+ctbc-raw-report-fetch/
+
+# Shell scripts
+scripts/build_macos.sh
+
+ctbc-raw-report-fetch

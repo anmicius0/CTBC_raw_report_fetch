@@ -1,65 +1,151 @@
 # Sonatype IQ Server Raw Report Fetcher
 
-Fetches raw scan reports from all applications in IQ Server and exports them as CSV files.
+A tool to fetch raw scan reports from all applications in Sonatype IQ Server and export them as CSV files.
 
-## Setup
+---
 
-1. Install dependencies:
+## 🚀 Quick Start
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+1. **Download the Executable**
 
-2. Set environment variables:
+   - Go to the [Releases](../../releases) page
+   - Download and extract the latest release for your OS
 
-   ```bash
-   export IQ_SERVER_URL="https://your-iq-server.com"
-   export IQ_USERNAME="your-username"
-   export IQ_PASSWORD="your-password"
-   ```
+2. **Configure Settings**
 
-3. Run:
-   ```bash
-   python main.py
-   ```
+   - Copy `config/.env.example` to `config/.env`
+   - Edit `config/.env` with your IQ Server URL, username, and password
 
-## Configuration
+3. **Run the Tool**
+   - On macOS/Linux: `./ctbc-raw-report-fetch`
+   - On Windows: `ctbc-raw-report-fetch.exe`
 
-**Required:**
+CSV reports will be saved in the `raw_reports` folder (or as set in `.env`).
 
-- `IQ_SERVER_URL` - IQ Server base URL
-- `IQ_USERNAME` - IQ Server username
-- `IQ_PASSWORD` - IQ Server password
+---
 
-**Optional:**
+## ⚙️ Configuration
 
-- `ORGANIZATION_ID` - Filter by organization (default: all apps)
-- `OUTPUT_DIR` - Output directory (default: `raw_reports`)
+Edit `config/.env` or set environment variables:
 
-Create `.env` file:
+- `IQ_SERVER_URL` (required)
+- `IQ_USERNAME` (required)
+- `IQ_PASSWORD` (required)
+- `ORGANIZATION_ID` (optional)
+- `OUTPUT_DIR` (optional, default: `raw_reports`)
 
-```env
+Example `.env`:
+
+```
 IQ_SERVER_URL=https://your-iq-server.com
 IQ_USERNAME=your-username
 IQ_PASSWORD=your-password
+OUTPUT_DIR=raw_reports
 ```
 
-## Customization
+---
 
-**Filter applications** - Edit `get_applications()` method:
+## 🛠️ Customization
+
+### Filter Applications
+
+Edit `get_applications()` in `main.py` to filter by name, ID, or pattern:
 
 ```python
-filtered = [app for app in applications if "prod" in app["name"].lower()]
+# ...existing code...
+apps = self.iq.get_applications(self.config.organization_id)
+filtered = [app for app in apps if "prod" in app.name.lower()]
+return filtered
+# ...existing code...
 ```
 
-**Change CSV format** - Edit `_save_raw_report_as_csv_manual()` method:
+### Change CSV Output
+
+Edit `_save_csv_manual()` in `main.py` to add/remove fields:
 
 ```python
-row["Custom Field"] = component.get("customField", "")
+# ...existing code...
+row = {
+    "Package URL": c.get("packageUrl", ""),
+    "Display Name": c.get("displayName", ""),
+    # Add custom fields here
+}
+# ...existing code...
 ```
 
-**Custom filename** - Edit `_save_report_data()` method:
+### Custom File Naming
+
+Edit `_save_as_csv()` in `main.py`:
 
 ```python
-filename = f"{app_public_id}_{timestamp}.csv"
+# ...existing code...
+filename = f"{public_id}_{report_id}.csv"
+filepath = self.output_path / filename
+# ...existing code...
 ```
+
+### Add Progress Bars
+
+Install `tqdm` and wrap your loop:
+
+```python
+from tqdm import tqdm
+for app in tqdm(apps, desc="Processing apps"):
+    self._fetch_app_report(app, ...)
+```
+
+---
+
+## 🧑‍💻 Development & Maintenance
+
+### Install & Run from Source
+
+1. `pip install -r requirements.txt`
+2. Copy and edit `config/.env.example` to `config/.env`
+3. `python main.py`
+
+### Update Dependencies
+
+- Edit `requirements.txt` and run `pip install -r requirements.txt`
+
+### Debugging
+
+- Set logging to DEBUG in `main.py` for more output
+- Use print statements or breakpoints as needed
+
+### Add Features
+
+- Add config options in `Config` (main.py)
+- Add new API calls in `IQServerClient`
+- Add new output formats in `RawReportFetcher`
+
+### Build Executable
+
+- Install PyInstaller: `pip install pyinstaller`
+- Build: `pyinstaller --onefile main.py`
+- Output is in `dist/`
+
+---
+
+## 🤝 Contributing
+
+- Fork the repo, create a branch, make changes, and submit a pull request.
+- Follow PEP 8, use type hints, and add docstrings.
+
+---
+
+## 📁 Project Structure
+
+```
+CTBC_raw_report_fetch/
+├── main.py              # Main logic
+├── error_handler.py     # Error handling
+├── requirements.txt     # Dependencies
+├── README.md            # This file
+├── config/.env.example  # Config template
+└── ...
+```
+
+---
+
+For more details, see comments in `main.py` and `error_handler.py`.
